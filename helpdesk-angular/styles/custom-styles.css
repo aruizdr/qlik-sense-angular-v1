@@ -1,0 +1,160 @@
+/*************************
+TABLE OF CONTENTS - Andres Ruiz Droege, 2018
+
+1. Custom Fonts - ARD
+2. Header and Navigation - ARD
+3. Main Content - ARD
+4. Footer - ARD
+5. Media Queries - ARD
+
+***************************
+*/
+
+body {
+	background: #242A32;; /* Old browsers */
+	/*background: -moz-linear-gradient(-45deg, #335d5c 0%, #518e93 50%, #335d5c 100%); /* FF3.6-15 */*/
+	/*background: -webkit-linear-gradient(-45deg, #335d5c 0%,#518e93 50%,#335d5c 100%); /* Chrome10-25,Safari5.1-6 */*/
+	/*background: linear-gradient(135deg, #335d5c 0%,#518e93 50%,#335d5c 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */*/
+	/*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#335d5c', endColorstr='#335d5c',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */*/
+	background-repeat: no-repeat;
+  padding-top: 55px;
+  padding-bottom: 30px;
+  font-size: 12px;
+}
+
+.clear {
+	clear: both;
+}
+
+#searchclear {
+  position: absolute;
+  right: 5px;
+  top: 0;
+  bottom: 0;
+  height: 16px;
+  margin: auto;
+  font-size: 16px;
+  cursor: pointer;
+  color: #ccc;
+  z-index: 10;
+}
+
+/*************************
+
+1. Custom Fonts - ARD
+***************************
+*/
+
+.navbar-inverse .navbar-brand,
+.qv-object-header {
+    font-weight: bold;
+    background: -webkit-linear-gradient(#BC64D7, #ccc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+
+h4 {
+  color: rgb(128, 128, 128);
+}
+
+h4.panel-title {
+  display: none;
+}
+
+
+
+/*************************
+
+2. Header and Navigation - ARD
+***************************
+*/
+
+
+
+/*************************
+
+3. Main Content - ARD
+***************************
+*/
+
+.panel-primary {
+    border-color: #242A32;
+}
+
+.panel-primary > .panel-heading {
+    color: #fff;
+    background-color: #242A32;
+    border-color: #242A32;
+}
+
+
+.panel-primary .input-group .form-control {
+
+    background: #545352;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.6);
+    margin: 10px 0px 10px 0px;
+    border-radius: 15px;
+
+}
+
+.panel-primary .panel-body {
+  background: #545352;
+  border: #545352;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.table-striped > tbody > tr:nth-child(2n+1) > td, 
+.table-striped > tbody > tr:nth-child(2n+1) > th {
+  background: #545352;
+  border: #545352;
+}
+
+.panel-primary .panel-body table th,
+.panel-primary .panel-body table td,
+.panel-primary .panel-body table tr {
+  color: rgba(255, 255, 255, 0.6); 
+  border: #545352;
+}
+
+
+
+/* qv engine styles overrride - ARD */
+
+.qv-selection-toolbar {
+    display: none;
+}
+
+.qv-global-search {
+  background: red;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  -webkit-transform: translateZ(1px);
+  -moz-transform: translateZ(1px);
+  -o-transform: translateZ(1px);
+  -ms-transform: translateZ(1px);
+  transform: translateZ(1px);
+}
+
+.buttons-end .qv-subtoolbar-button.borderbox {
+  display: none;
+}
+
+
+.qv-global-search .qv-global-search-input {
+  background-color: #545352;
+}
+
+.qv-panel-current-selections .buttons-end .qv-subtoolbar-button.global-search-button.active {
+  background: rgba(64, 63, 62, 0.7);
+  border-bottom: none;
+}
+
+.lui-search .lui-search__search-icon,
+.lui-search .lui-search__input {
+  color:rgba(255, 255, 255, 0.6);
+}
+
+
+
