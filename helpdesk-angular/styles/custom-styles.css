@@ -49,6 +49,7 @@ body {
 .qv-object-header {
     font-weight: bold;
     background: -webkit-linear-gradient(#BC64D7, #ccc);
+    background: linear-gradient(#BC64D7, #ccc);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -77,6 +78,17 @@ h4.panel-title {
 3. Main Content - ARD
 ***************************
 */
+
+.btn-custom {
+    background: #ccc;
+    color: #202020;
+    margin-bottom: 20px;
+}
+
+.btn-custom:hover {
+  background: #222;
+  color: #ccc;
+}
 
 .panel-primary {
     border-color: #242A32;
@@ -137,7 +149,7 @@ h4.panel-title {
   transform: translateZ(1px);
 }
 
-.buttons-end .qv-subtoolbar-button.borderbox {
+.buttons-end .qv-subtoolbar-button.qv-explore-selections-btn {
   display: none;
 }
 

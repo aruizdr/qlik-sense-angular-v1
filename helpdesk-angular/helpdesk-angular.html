@@ -1,6 +1,5 @@
 <!doctype html>
-<html qva-bootstrap="false">
-<head>
+<html qva-bootstrap="false"><head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<title>Qlik Sense Mashup - With UI-Router</title>
@@ -19,10 +18,10 @@
     <link rel="stylesheet" type="text/css" href="styles/mq.css">
 
 </head>
-<body role="document" style="overflow: auto" >
+<body role="document" style="overflow: auto">
 
 <!-- Fixed navbar -->
-<div  class="navbar navbar-inverse nazvbar-fixed-top" role="navigation">
+<div class="navbar navbar-inverse nazvbar-fixed-top" role="navigation">
 	<div class="container">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -36,13 +35,17 @@
 		<div class="navbar-collapse collapse">
 			<ul class="nav navbar-nav pull-right">
 				<li>
-					<a href="#/start">Dashboard</a>
+					<a ui-sref="home">Dashboard</a>
 				</li>
+<!-- 				<li>
+					<a ui-sref="cases">Cases</a>
+				</li> -->
+				
 				<li>
-					<a href="#/cases">Cases</a>
-				</li>
-								<li>
-					<a href="#/additional-services">Additional Services</a>
+					<a ui-sref="cases-2">Cases</a>
+				</li>				
+				<li>
+					<a ui-sref="additional-services">Additional Services</a>
 				</li>
 			</ul>
 		</div>
@@ -50,26 +53,29 @@
 	</div>
 </div>
 
-<div class="container " id="main" role="main" >
+<div class="container " id="main" role="main">
 	<!-- Custom Error Message When Qlik Data not Loading -->
 	<div class="alert alert-danger alert-dismissible" role="alert" style="display:none">
-		<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
 		<span id="errmsg"></span>
 	</div>
 
-	<div ng-view>
+	<div ui-view=""></div>
 
-	</div>
 </div>
 
 	<!--Add host to this link if the mashup is on an external webserver-->	
-	<script src="//unpkg.com/@uirouter/angularjs/release/angular-ui-router.min.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/4.1.0/echarts.min.js"></script>
+
 	<script src="/resources/assets/external/requirejs/require.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 	<script src="helpdesk-angular.js"></script>
 
 
-</body>
-</html>
+
+</body></html>

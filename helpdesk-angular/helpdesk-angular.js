@@ -23,6 +23,7 @@ require.config( {
 
 } );
 
+
 require( ["js/qlik"], function ( qlik ) {
 	//qlik app
 	var app;
@@ -34,55 +35,72 @@ require( ["js/qlik"], function ( qlik ) {
 
 
 	function getQlikApp () {
-		//return qlik.openApp( "4bf04442-aa89-43ff-870a-917c86c92990", config )
 		return qlik.openApp( "Helpdesk Management.qvf", config )
 	}
-
-	//callbacks -- inserted here --
-	function setCases ( reply, app ) {
-		data.headers.length = 0;
-		data.rows.length = 0;
-		//set headers
-		reply.qHyperCube.qDimensionInfo.forEach( function ( dim ) {
-			data.headers.push( dim.qFallbackTitle );
-		} );
-		reply.qHyperCube.qMeasureInfo.forEach( function ( mea ) {
-			data.headers.push( mea.qFallbackTitle );
-		} );
-		reply.qHyperCube.qDataPages.forEach( function ( page ) {
-			page.qMatrix.forEach( function ( row ) {
-				data.rows.push( row );
-			} );
-		} );
-	}
 	
-
-	// ARD - COMO FAZER PARA LEVAR OS CONTROLLERS PARA UM OUTRO ARQUIVO?
-	// ARD - Tentei chamar o ngResource na linha 65, mas o RequireJS botava erro... Nao entendi o por que disso??
-	// 	devo de definir o chamado do ngResource para ele antes em outro lugar?
 	
 	// MODULE
-	var helpdeskApp = angular.module( "helpdeskApp", ['ngRoute'] );
+	var helpdeskApp = angular.module( "helpdeskApp", ['ui.router'] );
 	
-	// ROUTES
-	helpdeskApp.config( function ( $routeProvider ) {
-		$routeProvider.when( '/cases', {
-			controller: 'CaseCtrl',
-			templateUrl: 'pages/cases.html'
+	// ROUTES with UI-Router
+
+	 helpdeskApp.config(function( $stateProvider, $urlRouterProvider) {
+
+	 	$urlRouterProvider.otherwise('/home');
+
+	    $stateProvider
+
+	        //HOME STATES AND NESTED VIEWS ========================================
+	        .state('home', {
+	            url: '/home',
+	            templateUrl: 'pages/home.html',
+	            controller: "MainCtrl",
+	            controllerAs: "mainController"
+
+	        })
+		    // nested list with custom controller
+		    .state('cases-2', {
+		        url: '/cases-2',
+				views: {
+
+		            // the main template will be placed here (relatively named)
+		            '': { templateUrl: 'pages/cases-2.html' },
+
+		            // the child views will be defined here (absolutely named)
+		            'columnOne@cases-2': {
+		            	url: 'charts/sales', 
+		            	templateUrl: 'charts/sales.html',
+		            	controller: 'SalesCtrl' 
+		            },
+
+		            // for column two, we'll define a separate controller 
+		            'columnTwo@cases-2': { 
+		            	url: 'charts/cases',
+		                templateUrl: 'charts/cases.html',
+		                controller: 'CaseCtrl'
+		            }
+		        }
+
+		    })
+
+	        .state( 'cases', {
+	        	url: '/cases',
+	 			templateUrl: 'pages/cases.html',
+	 			controller: 'CaseCtrl',
+	 			controllerAs: "casesController"
 			
-		} )
-		.when( '/additional-services',{ 
-			controller: 'ServicesCtrl',
-			templateUrl : 'pages/additional-services.html'
+	 		})
+	 		.state( 'additional-services',{
+	 			url: '/additional-services', 
+	 			templateUrl : 'pages/additional-services.html',
+	 			controller: 'ServicesCtrl',
+	 			controllerAs: 'ServicesController'
 
-		} )
+	 		})
 
-		.otherwise( {
-				controller: 'MainCtrl',
-				templateUrl: './main.html'
-			} );
-	} );
-	
+	 } );
+
+
 
 	// CONTROLLERS
 	// Controller com data direito da Qlik Engine
@@ -91,10 +109,9 @@ require( ["js/qlik"], function ( qlik ) {
 			app = getQlikApp();
 		}
 		//get objects -- inserted here --
-		// ARD - Aqui eu consigo isolar dados especificos? Fiquei confuso em como seria feita aquela chamada 
-		// dentro do Objeto Nativo da Qlik... Help, please?
+
 		app.getObject( 'QV00', 'CurrentSelections' ).then(function ( obj1 ) {
-			console.log( obj1  );
+			//console.log( obj1  );
 		});
 		app.getObject( 'QV01', 'hRZaKk' );
 		app.getObject( 'QV02', 'xfvKMP' );
@@ -104,7 +121,71 @@ require( ["js/qlik"], function ( qlik ) {
 
 	}] );
 
-	// Controller com data de um Hypercube. Aqui foi bem de boa, para mim ficou claro o conceito
+	helpdeskApp.controller( "SalesCtrl", ['$scope', function ( $scope ) {
+		if ( !app ) {
+			app = getQlikApp();
+		}
+
+		//get objects -- inserted here --
+		app.createCube({
+		"qInitialDataFetch": [
+			{
+				"qHeight": 20,
+				"qWidth": 2
+			}
+		],
+		"qDimensions": [
+			{
+				"qLabel": "Department",
+				"qLibraryId": "RBBKJP",
+				"qNullSuppression": true,
+				"qOtherTotalSpec": {
+					"qOtherMode": "OTHER_OFF",
+					"qSuppressOther": true,
+					"qOtherSortMode": "OTHER_SORT_DESCENDING",
+					"qOtherCounted": {
+						"qv": "5"
+					},
+					"qOtherLimitMode": "OTHER_GE_LIMIT"
+				}
+			}
+		],
+		"qMeasures": [
+			{
+				"qLabel": "Open Cases",
+				"qLibraryId": "MPcQeZ",
+				"qSortBy": {
+					"qSortByState": 0,
+					"qSortByFrequency": 0,
+					"qSortByNumeric": 0,
+					"qSortByAscii": 1,
+					"qSortByLoadOrder": 0,
+					"qSortByExpression": 0,
+					"qExpression": {
+						"qv": " "
+					}
+				}
+			}
+		],
+		"qSuppressZero": false,
+		"qSuppressMissing": false,
+		"qMode": "S",
+		"qInterColumnSortOrder": [],
+		"qStateName": "$"
+		},function( reply, app ){
+
+			openCasesDeptChart(reply, 'test-hypercube');
+
+		});
+
+
+
+
+
+	}] );
+
+
+	// Controller com data de um Hypercube, e data direito do Qlik Engine.
 	helpdeskApp.controller( "CaseCtrl", ['$scope', function ( $scope ) {
 		if ( !app ) {
 			app = getQlikApp();
@@ -112,8 +193,7 @@ require( ["js/qlik"], function ( qlik ) {
 		//get objects -- inserted here --
 		app.getObject( 'QV00', 'CurrentSelections' );
 		app.getObject( 'QV04', 'PAppmU' );
-	    	app.getObject( 'QV01', 'hRZaKk' );
-
+	    app.getObject( 'QV01', 'hRZaKk' );
 
 
 		app.createCube( {
@@ -152,16 +232,71 @@ require( ["js/qlik"], function ( qlik ) {
 		$scope.headers = data.headers;
 		$scope.rows = data.rows;
 
+
+		app.createCube({
+		"qInitialDataFetch": [
+			{
+				"qHeight": 20,
+				"qWidth": 2
+			}
+		],
+		"qDimensions": [
+			{
+				"qLabel": "%CaseId",
+				"qLibraryId": "sEavA",
+				"qNullSuppression": true,
+				"qOtherTotalSpec": {
+					"qOtherMode": "OTHER_OFF",
+					"qSuppressOther": true,
+					"qOtherSortMode": "OTHER_SORT_DESCENDING",
+					"qOtherCounted": {
+						"qv": "5"
+					},
+					"qOtherLimitMode": "OTHER_GE_LIMIT"
+				}
+			}
+		],
+		"qMeasures": [
+			{
+				"qLabel": "Case Duration (dd hh:mm)",
+				"qLibraryId": "emtEjp",
+				"qSortBy": {
+					"qSortByState": 0,
+					"qSortByFrequency": 0,
+					"qSortByNumeric": 0,
+					"qSortByAscii": 1,
+					"qSortByLoadOrder": 0,
+					"qSortByExpression": 0,
+					"qExpression": {
+						"qv": " "
+					}
+				}
+			}
+		],
+		"qSuppressZero": false,
+		"qSuppressMissing": false,
+		"qMode": "S",
+		"qInterColumnSortOrder": [],
+		"qStateName": "$"
+		},function( reply, app ){
+
+			caseDurationChart(reply, 'qv02-hypercube');
+
+		});
+
+
 	}] );
+
 	// Controller de terceira pagina
 	helpdeskApp.controller( "ServicesCtrl", ['$scope', function ( $scope ) {
 		if ( !app ) {
 			app = getQlikApp();
 		}
 		//get objects -- inserted here --
-		app.getObject( 'QV00', 'CurrentSelections' );
+		    app.getObject( 'QV00', 'CurrentSelections' );
 	    	app.getObject( 'QV02', '298bbd6d-f23d-4469-94a2-df243d680e0c' );
 	    	app.getObject( 'QV05', 'rJFbvG' );
+
 
 	}] );
 
@@ -179,6 +314,214 @@ require( ["js/qlik"], function ( qlik ) {
 		$( "#errmsg" ).html( error.message ).parent().show();
 	} );
 
-	//
+
+
+	//callbacks -- inserted here --
+	function setCases ( reply, app ) {
+		data.headers.length = 0;
+		data.rows.length = 0;
+		//set headers
+		reply.qHyperCube.qDimensionInfo.forEach( function ( dim ) {
+			data.headers.push( dim.qFallbackTitle );
+		} );
+		reply.qHyperCube.qMeasureInfo.forEach( function ( mea ) {
+			data.headers.push( mea.qFallbackTitle );
+		} );
+		reply.qHyperCube.qDataPages.forEach( function ( page ) {
+			page.qMatrix.forEach( function ( row ) {
+				data.rows.push( row );
+			} );
+		} );
+	}
+
+	function openCasesDeptChart (reply, htmlId ) {
+		//console.log(reply);
+
+		var matrix = reply.qHyperCube.qDataPages[0].qMatrix;
+        
+		//console.log(matrix);
+
+        if(!htmlId || !reply) {
+            throw new Error("You must provide two parameters");
+        }
+
+
+       var dimensions = [];
+       var measures = [];
+
+        //loop to fetch data from Matrix
+        for(let i = 0; i < matrix.length; i++) {
+           
+           let dimension = matrix[i][0].qText;
+           let measure = matrix[i][1].qNum;
+           
+           dimensions.push(dimension);
+           measures.push(measure);
+       	}
+    
+
+		// echart Code 
+
+		var myChart = echarts.init(document.getElementById(htmlId));
+
+		//console.log(myChart);
+
+        // specify chart configuration item and data
+        var option = {
+            title: {
+                text: 'Open Cases By Department',
+                textStyle: {
+            		color: '#ccc'
+       			}
+            },
+            tooltip: {},
+            legend: {
+                data:['Sales']
+            },
+            xAxis: {
+                data: dimensions,
+           		axisLabel: {
+            		textStyle: {
+                		color: '#ccc'
+            		}
+        		},
+            },
+            yAxis: {
+           		axisLabel: {
+            		textStyle: {
+                		color: '#BC64D7',
+                		fontWeight: 'bold'
+            		}
+        		},           	
+            },
+            series: [{
+                name: reply.qHyperCube.qMeasureInfo[0].qFallbackTitle,
+                type: 'bar',
+                itemStyle: {
+                normal: {
+                    color: new echarts.graphic.LinearGradient(
+                        0, 0, 0, 1,
+                        [
+                            {offset: 0, color: '#83bff6'},
+                            {offset: 0.1, color: '#188df0'},
+                            {offset: 1, color: '#BC64D7'}
+                        ]
+                    )
+                },
+                emphasis: {
+                    color: new echarts.graphic.LinearGradient(
+                        0, 0, 0, 1,
+                        [
+                            {offset: 0, color: '#2378f7'},
+                            {offset: 0.5, color: '#2378f7'},
+                            {offset: 1, color: '#83bff6'}
+                        ]
+                    )
+                }
+            },
+                data: measures
+            }]
+        };
+        // use configuration item and data specified to show chart
+        myChart.setOption(option);
+
+		// end echart Code 
+
+
+	}
+
+
+	function caseDurationChart (reply, htmlId ) {
+		//console.log(reply);
+
+        var matrix = reply.qHyperCube.qDataPages[0].qMatrix;
+        //console.log(matrix)
+        if(!htmlId || !reply) {
+            throw new Error("You must provide two parameters");
+        }
+
+       var dimensions = [];
+       var measures = [];
+
+        //loop to fetch data from Matrix
+        for(let i = 0; i < matrix.length; i++) {
+           
+           let dimension = matrix[i][0].qText;
+           let measure = matrix[i][1].qText;
+           
+           dimensions.push(dimension);
+           measures.push(measure);
+       	}
+    
+
+		// echart Code 
+
+		var myChart = echarts.init(document.getElementById(htmlId));
+
+		//console.log(myChart);
+
+        // specify chart configuration item and data
+        var option = {
+            title: {
+                text: 'HyperCube renderizado com uma EChart',
+                textStyle: {
+            		color: '#ccc'
+       			}
+            },
+            tooltip: {},
+            legend: {
+                data:['Sales']
+            },
+            xAxis: {
+                data: dimensions,
+           		axisLabel: {
+            		textStyle: {
+                		color: '#ccc'
+            		}
+        		},
+            },
+            yAxis: {
+           		axisLabel: {
+            		textStyle: {
+                		color: '#BC64D7',
+                		fontWeight: 'bold'
+            		}
+        		},
+            },
+            series: [{
+                name: reply.qHyperCube.qMeasureInfo[0].qFallbackTitle,
+                type: 'bar',
+                itemStyle: {
+                normal: {
+                    color: new echarts.graphic.LinearGradient(
+                        0, 0, 0, 1,
+                        [
+                            {offset: 0, color: '#83bff6'},
+                            {offset: 0.2, color: '#188df0'},
+                            {offset: 1, color: '#BC64D7'}
+                        ]
+                    )
+                },
+                emphasis: {
+                    color: new echarts.graphic.LinearGradient(
+                        0, 0, 0, 1,
+                        [
+                            {offset: 0, color: '#2378f7'},
+                            {offset: 0.5, color: '#2378f7'},
+                            {offset: 1, color: '#83bff6'}
+                        ]
+                    )
+                }
+            },
+                data: measures
+            }]
+        };
+        // use configuration item and data specified to show chart
+        myChart.setOption(option);
+
+		// end echart Code 
+
+
+	}
 
 } );
